@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Turing Machine That Mirrors, Reverses, and Rebuilds Strings</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🧠 Turing Machine That Mirrors, Reverses, and Rebuilds Strings</h1>
+        <p>Function: f(w) = w w<sup>R</sup> w</p>
+    </div>
+
+    <div class="container">
+        <!-- Robot Animation -->
+        <div class="robot-container">
+            <svg class="robot" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="robotGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <!-- Robot Head -->
+                <rect x="60" y="40" width="80" height="70" rx="10" fill="url(#robotGrad)" class="robot-head"/>
+                <!-- Antenna -->
+                <line x1="100" y1="40" x2="100" y2="20" stroke="#667eea" stroke-width="3" class="antenna"/>
+                <circle cx="100" cy="15" r="8" fill="#f59e0b" class="antenna-light"/>
+                <!-- Eyes -->
+                <circle cx="80" cy="70" r="8" fill="white" class="eye-left"/>
+                <circle cx="120" cy="70" r="8" fill="white" class="eye-right"/>
+                <circle cx="82" cy="72" r="4" fill="#1f2937" class="pupil-left"/>
+                <circle cx="122" cy="72" r="4" fill="#1f2937" class="pupil-right"/>
+                <!-- Mouth -->
+                <path d="M 75 90 Q 100 100 125 90" stroke="#1f2937" stroke-width="3" fill="none" class="mouth"/>
+                <!-- Body -->
+                <rect x="70" y="110" width="60" height="50" rx="8" fill="url(#robotGrad)" class="robot-body"/>
+                <!-- Arms -->
+                <rect x="40" y="120" width="30" height="10" rx="5" fill="#667eea" class="arm-left"/>
+                <rect x="130" y="120" width="30" height="10" rx="5" fill="#667eea" class="arm-right"/>
+                <!-- Legs -->
+                <rect x="75" y="160" width="15" height="30" rx="5" fill="#667eea" class="leg-left"/>
+                <rect x="110" y="160" width="15" height="30" rx="5" fill="#667eea" class="leg-right"/>
+            </svg>
+        </div>
+
+        <!-- State Diagram Card -->
+        <div class="card">
+            <h2>📊 State Transition Diagram</h2>
+            <div class="state-diagram">
+                <svg viewBox="0 0 1100 650" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#667eea" />
+                        </marker>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <!-- Start Arrow -->
+                    <line x1="30" y1="120" x2="80" y2="120" stroke="#667eea" stroke-width="3" marker-end="url(#arrowhead)" />
+                    <text x="35" y="110" font-size="16" fill="#667eea" font-weight="bold">Start</text>
+
+                    <!-- Phase 1: Copy w → ww -->
+                    <rect x="80" y="30" width="420" height="50" fill="#e0e7ff" stroke="#667eea" stroke-width="2" rx="10" />
+                    <text x="290" y="60" font-size="18" font-weight="bold" text-anchor="middle" fill="#667eea">Phase 1: Copy w → ww</text>
+
+                    <!-- State q0 -->
+                    <g class="state-node">
+                        <circle cx="130" cy="120" r="40" fill="#fff" stroke="#667eea" stroke-width="4" filter="url(#glow)"/>
+                        <text x="130" y="130" font-size="22" font-weight="bold" text-anchor="middle" fill="#667eea">q₀</text>
+                        <text x="130" y="185" font-size="14" text-anchor="middle" fill="#667eea">Mark & Copy</text>
+                    </g>
+
+                    <!-- State q1 -->
+                    <g class="state-node">
+                        <circle cx="280" cy="120" r="40" fill="#fff" stroke="#667eea" stroke-width="4" filter="url(#glow)"/>
+                        <text x="280" y="130" font-size="22" font-weight="bold" text-anchor="middle" fill="#667eea">q₁</text>
+                        <text x="280" y="185" font-size="14" text-anchor="middle" fill="#667eea">Copy 'a'</text>
+                    </g>
+
+                    <!-- State q2 -->
+                    <g class="state-node">
+                        <circle cx="430" cy="120" r="40" fill="#fff" stroke="#667eea" stroke-width="4" filter="url(#glow)"/>
+                        <text x="430" y="130" font-size="22" font-weight="bold" text-anchor="middle" fill="#667eea">q₂</text>
+                        <text x="430" y="185" font-size="14" text-anchor="middle" fill="#667eea">Copy 'b'</text>
+                    </g>
+
+                    <!-- Phase 2: Reverse -->
+                    <rect x="530" y="30" width="270" height="50" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" rx="10" />
+                    <text x="665" y="60" font-size="18" font-weight="bold" text-anchor="middle" fill="#f59e0b">Phase 2: Reverse ww → wwᴿ</text>
+
+                    <!-- State q3 -->
+                    <g class="state-node">
+                        <circle cx="620" cy="120" r="40" fill="#fff" stroke="#f59e0b" stroke-width="4" filter="url(#glow)"/>
+                        <text x="620" y="130" font-size="22" font-weight="bold" text-anchor="middle" fill="#f59e0b">q₃</text>
+                        <text x="620" y="185" font-size="14" text-anchor="middle" fill="#f59e0b">Find End</text>
+                    </g>
+
+                    <!-- State q4 -->
+                    <g class="state-node">
+                        <circle cx="760" cy="120" r="40" fill="#fff" stroke="#f59e0b" stroke-width="4" filter="url(#glow)"/>
+                        <text x="760" y="130" font-size="22" font-weight="bold" text-anchor="middle" fill="#f59e0b">q₄</text>
+                        <text x="760" y="185" font-size="14" text-anchor="middle" fill="#f59e0b">Reverse</text>
+                    </g>
+
+                    <!-- Phase 3: Append w -->
+                    <rect x="530" y="380" width="350" height="50" fill="#d1fae5" stroke="#10b981" stroke-width="2" rx="10" />
+                    <text x="705" y="410" font-size="18" font-weight="bold" text-anchor="middle" fill="#10b981">Phase 3: Append w → wwᴿw</text>
+
+                    <!-- State q5 -->
+                    <g class="state-node">
+                        <circle cx="620" cy="300" r="40" fill="#fff" stroke="#10b981" stroke-width="4" filter="url(#glow)"/>
+                        <text x="620" y="310" font-size="22" font-weight="bold" text-anchor="middle" fill="#10b981">q₅</text>
+                        <text x="620" y="365" font-size="14" text-anchor="middle" fill="#10b981">Append w</text>
+                    </g>
+
+                    <!-- State qf (Accept) -->
+                    <g class="state-node">
+                        <circle cx="900" cy="300" r="40" fill="#fff" stroke="#667eea" stroke-width="4" filter="url(#glow)"/>
+                        <circle cx="900" cy="300" r="32" fill="none" stroke="#667eea" stroke-width="3"/>
+                        <text x="900" y="310" font-size="22" font-weight="bold" text-anchor="middle" fill="#667eea">qf</text>
+                        <text x="900" y="365" font-size="14" text-anchor="middle" fill="#667eea">Accept ✓</text>
+                    </g>
+
+                    <!-- Transitions q0 → q1 -->
+                    <path d="M 170 120 L 240 120" stroke="#667eea" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="205" y="110" font-size="13" fill="#667eea" font-weight="600">a/X,R</text>
+
+                    <!-- Transitions q0 → q2 -->
+                    <path d="M 165 145 Q 280 180, 395 145" stroke="#667eea" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="280" y="185" font-size="13" fill="#667eea" font-weight="600">b/Y,R</text>
+
+                    <!-- q1 self-loop -->
+                    <path d="M 280 80 Q 280 40, 310 75" stroke="#667eea" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="290" y="50" font-size="13" fill="#667eea" font-weight="600">a,b→R</text>
+
+                    <!-- q1 → q0 -->
+                    <path d="M 245 135 Q 205 155, 165 135" stroke="#667eea" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="205" y="160" font-size="13" fill="#667eea" font-weight="600">_/a,L</text>
+
+                    <!-- q2 self-loop -->
+                    <path d="M 430 80 Q 430 40, 460 75" stroke="#667eea" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="440" y="50" font-size="13" fill="#667eea" font-weight="600">a,b→R</text>
+
+                    <!-- q2 → q0 -->
+                    <path d="M 395 135 Q 280 200, 165 135" stroke="#667eea" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="280" y="210" font-size="13" fill="#667eea" font-weight="600">_/b,L</text>
+
+                    <!-- q0 → q3 (when done copying) -->
+                    <path d="M 170 110 Q 395 60, 580 110" stroke="#f59e0b" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="375" y="75" font-size="13" fill="#f59e0b" font-weight="600">_/_,R</text>
+
+                    <!-- q3 → q4 -->
+                    <path d="M 660 120 L 720 120" stroke="#f59e0b" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="690" y="110" font-size="13" fill="#f59e0b" font-weight="600">Scan</text>
+
+                    <!-- q4 → q5 -->
+                    <path d="M 745 155 L 635 265" stroke="#10b981" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="700" y="220" font-size="13" fill="#10b981" font-weight="600">Done</text>
+
+                    <!-- q5 self-loop -->
+                    <path d="M 580 300 Q 540 300, 580 335" stroke="#10b981" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="530" y="320" font-size="13" fill="#10b981" font-weight="600">Copy w</text>
+
+                    <!-- q5 → qf -->
+                    <path d="M 660 300 L 860 300" stroke="#667eea" stroke-width="3" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="760" y="290" font-size="13" fill="#667eea" font-weight="600">Complete</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Simulation Card -->
+        <div class="card">
+            <h2>⚡ Interactive Simulation</h2>
+            
+            <!-- Example Buttons -->
+            <div class="simulation-controls">
+                <button class="btn btn-example active" onclick="changeExample('ab')">
+                    📝 Example: w = ab
+                </button>
+                <button class="btn btn-example" onclick="changeExample('baa')">
+                    📝 Example: w = baa
+                </button>
+                <button class="btn btn-example" onclick="changeExample('aba')">
+                    📝 Example: w = aba
+                </button>
+            </div>
+
+            <!-- Info Banner -->
+            <div class="info-banner">
+                <p>
+                    <strong>Input:</strong> <span id="input-text">ab</span> → 
+                    <strong>Output:</strong> <span id="output-text">abbaab</span>
+                </p>
+            </div>
+
+            <!-- Tape Display -->
+            <div class="tape-viewport">
+                <div id="tape-display"></div>
+            </div>
+
+            <!-- State Information -->
+            <div class="state-display">
+                <div class="state-box">
+                    <h3>Current State</h3>
+                    <div class="value" id="current-state">q₀</div>
+                </div>
+                <div class="state-box">
+                    <h3>Head Position</h3>
+                    <div class="value" id="head-pos">0</div>
+                </div>
+                <div class="state-box">
+                    <h3>Step Count</h3>
+                    <div class="value" id="step-count">1</div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="description-box">
+                <p id="step-desc">🎬 Initial configuration - Ready to start</p>
+            </div>
+
+            <!-- Controls -->
+            <div class="simulation-controls">
+                <button class="btn btn-prev" onclick="prevStep()">
+                    ⏮️ Previous
+                </button>
+                <button class="btn btn-reset" onclick="reset()">
+                    🔄 Reset
+                </button>
+                <button class="btn btn-control" onclick="nextStep()">
+                    Next Step ▶️
+                </button>
+            </div>
+
+            <!-- Custom Input Section -->
+            <div class="custom-input-section">
+                <h3>🎯 Try Your Own Input</h3>
+                <div class="input-group">
+                    <input type="text" id="custom-input" placeholder="Enter string (only 'a' and 'b')" maxlength="10">
+                    <button class="btn btn-example" onclick="runCustomInput()">
+                        ▶️ Run
+                    </button>
+                </div>
+                <p style="margin-top: 10px; color: #6b7280; font-size: 0.9rem;">
+                    💡 Enter a string using only characters 'a' and 'b' (e.g., "aab", "ba", "abba")
+                </p>
+            </div>
+        </div>
+
+        <!-- Legend Card -->
+        <div class="card legend">
+            <h2>📖 Legend & Information</h2>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="legend-box active-box"></div>
+                    <span>Current tape head position</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box normal-box"></div>
+                    <span>Tape cell</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol">␣</span>
+                    <span>Blank symbol</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-symbol">w<sup>R</sup></span>
+                    <span>Reverse of w</span>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h3>🎓 How It Works</h3>
+                <ol>
+                    <li><strong>Phase 1:</strong> Copy input string w to create ww</li>
+                    <li><strong>Phase 2:</strong> Reverse the second copy to get wwᴿ</li>
+                    <li><strong>Phase 3:</strong> Append original w to get wwᴿw</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
