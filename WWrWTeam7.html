@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turing Machine: f(w) = ww^R w</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(to bottom right, #eff6ff, #e0e7ff);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #312e81;
+            font-size: 2rem;
+            margin-bottom: 24px;
+        }
+
+        .section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        h3 {
+            color: #1f2937;
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+        }
+
+        .svg-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .example-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-example {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-example:hover {
+            background: #d1d5db;
+        }
+
+        .btn-example.active {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .info-box {
+            padding: 16px;
+            background: #dbeafe;
+            border-radius: 8px;
+            border: 2px solid #93c5fd;
+            margin-bottom: 16px;
+        }
+
+        .info-box p {
+            font-size: 1.125rem;
+        }
+
+        .tape-container {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .tape-cell {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            background: white;
+            color: #374151;
+        }
+
+        .tape-cell.active {
+            border-color: #ef4444;
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .head-indicator {
+            display: flex;
+            justify-content: center;
+            color: #dc2626;
+            font-weight: bold;
+            font-size: 1.5rem;
+            transition: margin-left 0.3s;
+        }
+
+        .state-info {
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .state-info p {
+            font-size: 1.125rem;
+            margin-bottom: 8px;
+        }
+
+        .state-value {
+            color: #4f46e5;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .btn-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-prev, .btn-next {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-prev:hover, .btn-next:hover {
+            background: #4b5563;
+        }
+
+        .btn-reset {
+            background: #eab308;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #ca8a04;
+        }
+
+        .btn-next.active {
+            background: #4f46e5;
+        }
+
+        .btn-next.active:hover {
+            background: #4338ca;
+        }
+
+        .btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .step-counter {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 16px;
+        }
+
+        .legend {
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend h4 {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 0.875rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 16px;
+            height: 16px;
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Turing Machine: f(w) = ww<sup>R</sup>w</h2>
+
+        <!-- State Diagram -->
+        <div class="section">
+            <h3>State Transition Diagram</h3>
+            <div class="svg-container">
+                <svg viewBox="0 0 1000 600">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#4F46E5" />
+                        </marker>
+                    </defs>
+
+                    <line x1="30" y1="100" x2="80" y2="100" stroke="#4F46E5" stroke-width="2" marker-end="url(#arrowhead)" />
+                    <text x="40" y="90" font-size="14" fill="#4F46E5" font-weight="bold">Start</text>
+
+                    <g>
+                        <circle cx="120" cy="100" r="35" fill="#EEF2FF" stroke="#4F46E5" stroke-width="3" />
+                        <text x="120" y="105" font-size="18" font-weight="bold" text-anchor="middle" fill="#4F46E5">q₀</text>
+                        <text x="120" y="160" font-size="12" text-anchor="middle" fill="#6366F1">Mark &amp; Copy</text>
+                    </g>
+
+                    <g>
+                        <circle cx="280" cy="100" r="35" fill="#EEF2FF" stroke="#4F46E5" stroke-width="3" />
+                        <text x="280" y="105" font-size="18" font-weight="bold" text-anchor="middle" fill="#4F46E5">q₁</text>
+                        <text x="280" y="160" font-size="12" text-anchor="middle" fill="#6366F1">Copy 'a'</text>
+                    </g>
+
+                    <g>
+                        <circle cx="440" cy="100" r="35" fill="#EEF2FF" stroke="#4F46E5" stroke-width="3" />
+                        <text x="440" y="105" font-size="18" font-weight="bold" text-anchor="middle" fill="#4F46E5">q₂</text>
+                        <text x="440" y="160" font-size="12" text-anchor="middle" fill="#6366F1">Copy 'b'</text>
+                    </g>
+
+                    <g>
+                        <circle cx="600" cy="100" r="35" fill="#FEF3C7" stroke="#D97706" stroke-width="3" />
+                        <text x="600" y="105" font-size="18" font-weight="bold" text-anchor="middle" fill="#D97706">q₃</text>
+                        <text x="600" y="160" font-size="12" text-anchor="middle" fill="#D97706">Reverse</text>
+                    </g>
+
+                    <g>
+                        <circle cx="760" cy="100" r="35" fill="#FEF3C7" stroke="#D97706" stroke-width="3" />
+                        <text x="760" y="105" font-size="18" font-weight="bold" text-anchor="middle" fill="#D97706">q₄</text>
+                        <text x="760" y="160" font-size="12" text-anchor="middle" fill="#D97706">Swap</text>
+                    </g>
+
+                    <g>
+                        <circle cx="600" cy="280" r="35" fill="#DCFCE7" stroke="#16A34A" stroke-width="3" />
+                        <text x="600" y="285" font-size="18" font-weight="bold" text-anchor="middle" fill="#16A34A">q₅</text>
+                        <text x="600" y="340" font-size="12" text-anchor="middle" fill="#16A34A">Append w</text>
+                    </g>
+
+                    <g>
+                        <circle cx="880" cy="280" r="35" fill="#DBEAFE" stroke="#1E40AF" stroke-width="3" />
+                        <circle cx="880" cy="280" r="28" fill="none" stroke="#1E40AF" stroke-width="2" />
+                        <text x="880" y="285" font-size="18" font-weight="bold" text-anchor="middle" fill="#1E40AF">qf</text>
+                        <text x="880" y="340" font-size="12" text-anchor="middle" fill="#1E40AF">Accept</text>
+                    </g>
+
+                    <path d="M 155 100 L 245 100" stroke="#4F46E5" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="200" y="90" font-size="11" fill="#4F46E5">a/X,R</text>
+
+                    <path d="M 155 110 Q 200 140, 405 110" stroke="#4F46E5" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="280" y="145" font-size="11" fill="#4F46E5">b/Y,R</text>
+
+                    <path d="M 280 65 Q 280 30, 310 65" stroke="#4F46E5" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="290" y="40" font-size="11" fill="#4F46E5">a,b/a,b,R</text>
+
+                    <path d="M 245 110 Q 200 130, 155 110" stroke="#4F46E5" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="200" y="140" font-size="11" fill="#4F46E5">_/a,L</text>
+
+                    <path d="M 440 65 Q 440 30, 470 65" stroke="#4F46E5" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="450" y="40" font-size="11" fill="#4F46E5">a,b/a,b,R</text>
+
+                    <path d="M 405 110 Q 280 170, 155 110" stroke="#4F46E5" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="280" y="175" font-size="11" fill="#4F46E5">_/b,L</text>
+
+                    <path d="M 155 100 Q 380 50, 565 100" stroke="#D97706" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="360" y="65" font-size="11" fill="#D97706">_/_,R</text>
+
+                    <path d="M 635 100 L 725 100" stroke="#D97706" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="680" y="90" font-size="11" fill="#D97706">Reverse</text>
+
+                    <path d="M 760 135 L 635 245" stroke="#16A34A" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="700" y="200" font-size="11" fill="#16A34A">Done</text>
+
+                    <path d="M 600 245 Q 560 280, 600 315" stroke="#16A34A" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="540" y="285" font-size="11" fill="#16A34A">Copy w</text>
+
+                    <path d="M 635 280 L 845 280" stroke="#1E40AF" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+                    <text x="740" y="270" font-size="11" fill="#1E40AF">Done</text>
+
+                    <rect x="80" y="200" width="400" height="30" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2" rx="5" />
+                    <text x="280" y="220" font-size="14" font-weight="bold" text-anchor="middle" fill="#4F46E5">Phase 1: Copy w → ww</text>
+
+                    <rect x="530" y="200" width="270" height="30" fill="#FEF3C7" stroke="#D97706" stroke-width="2" rx="5" />
+                    <text x="665" y="220" font-size="14" font-weight="bold" text-anchor="middle" fill="#D97706">Phase 2: Reverse</text>
+
+                    <rect x="530" y="380" width="270" height="30" fill="#DCFCE7" stroke="#16A34A" stroke-width="2" rx="5" />
+                    <text x="665" y="400" font-size="14" font-weight="bold" text-anchor="middle" fill="#16A34A">Phase 3: Append w</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Simulation -->
+        <div class="section">
+            <h3>Simulation</h3>
+            
+            <div class="example-buttons">
+                <button class="btn btn-example active" onclick="changeExample('ab')">
+                    Example: w = ab
+                </button>
+                <button class="btn btn-example" onclick="changeExample('baa')">
+                    Example: w = baa
+                </button>
+            </div>
+
+            <div class="info-box">
+                <p>
+                    <span style="font-weight: 600;">Input:</span> <span id="input-text">ab</span> →
+                    <span style="font-weight: 600;">Output:</span> <span id="output-text">abbaab</span>
+                </p>
+            </div>
+
+            <div id="tape-display" style="margin-bottom: 24px;"></div>
+
+            <div class="state-info">
+                <p>
+                    <span style="font-weight: 600;">Current State:</span>
+                    <span class="state-value" id="current-state">q0</span>
+                </p>
+                <p style="color: #374151;" id="step-desc">Initial configuration</p>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-control btn-prev" onclick="prevStep()">
+                    Previous
+                </button>
+                <button class="btn btn-control btn-reset" onclick="reset()">
+                    ↻ Reset
+                </button>
+                <button class="btn btn-control btn-next active" onclick="nextStep()">
+                    Next ▶
+                </button>
+            </div>
+
+            <div class="step-counter" id="step-counter">
+                Step 1 of 6
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <h4>Legend:</h4>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-box"></div>
+                    <span>Current tape head position</span>
+                </div>
+                <div class="legend-item">
+                    <span style="font-family: monospace;">␣</span>
+                    <span>Blank symbol</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const examples = {
+            'ab': {
+                input: 'ab',
+                output: 'abbaab',
+                steps: [
+                    { tape: ['a', 'b', '_', '_', '_', '_'], head: 0, state: 'q0', desc: 'Initial configuration' },
+                    { tape: ['a', 'b', 'a', '_', '_', '_'], head: 2, state: 'q1', desc: "Copied first 'a'" },
+                    { tape: ['a', 'b', 'a', 'b', '_', '_'], head: 3, state: 'q2', desc: 'Copied w to get ww: ab|ab' },
+                    { tape: ['a', 'b', 'b', 'a', '_', '_'], head: 2, state: 'q3', desc: 'Reversed middle: ab → ba' },
+                    { tape: ['a', 'b', 'b', 'a', 'a', '_'], head: 4, state: 'q4', desc: "Appending w: copied 'a'" },
+                    { tape: ['a', 'b', 'b', 'a', 'a', 'b'], head: 5, state: 'qf', desc: 'Final: abbaab' }
+                ]
+            },
+            'baa': {
+                input: 'baa',
+                output: 'baaaabbaa',
+                steps: [
+                    { tape: ['b', 'a', 'a', '_', '_', '_', '_', '_', '_'], head: 0, state: 'q0', desc: 'Initial configuration' },
+                    { tape: ['b', 'a', 'a', 'b', '_', '_', '_', '_', '_'], head: 3, state: 'q1', desc: "Copied first 'b'" },
+                    { tape: ['b', 'a', 'a', 'b', 'a', '_', '_', '_', '_'], head: 4, state: 'q2', desc: 'Copying w...' },
+                    { tape: ['b', 'a', 'a', 'b', 'a', 'a', '_', '_', '_'], head: 5, state: 'q3', desc: 'Copied w: baa|baa' },
+                    { tape: ['b', 'a', 'a', 'a', 'a', 'b', '_', '_', '_'], head: 3, state: 'q4', desc: 'Reversed: baa → aab' },
+                    { tape: ['b', 'a', 'a', 'a', 'a', 'b', 'b', '_', '_'], head: 6, state: 'q5', desc: 'Appending w...' },
+                    { tape: ['b', 'a', 'a', 'a', 'a', 'b', 'b', 'a', '_'], head: 7, state: 'q6', desc: 'Appending w...' },
+                    { tape: ['b', 'a', 'a', 'a', 'a', 'b', 'b', 'a', 'a'], head: 8, state: 'qf', desc: 'Final: baaaabbaa' }
+                ]
+            }
+        };
+
+        let selectedExample = 'ab';
+        let currentStep = 0;
+
+        function renderTape() {
+            const example = examples[selectedExample];
+            const step = example.steps[currentStep];
+            const tapeDisplay = document.getElementById('tape-display');
+            
+            let tapeHTML = '<div class="tape-container">';
+            step.tape.forEach((cell, idx) => {
+                const isActive = idx === step.head ? 'active' : '';
+                const displayCell = cell === '_' ? '␣' : cell;
+                tapeHTML += `<div class="tape-cell ${isActive}">${displayCell}</div>`;
+            });
+            tapeHTML += '</div>';
+            tapeHTML += `<div class="head-indicator" style="margin-left: ${step.head * 60}px;">↑</div>`;
+            
+            tapeDisplay.innerHTML = tapeHTML;
+            
+            document.getElementById('current-state').textContent = step.state;
+            document.getElementById('step-desc').textContent = step.desc;
+            document.getElementById('step-counter').textContent = 
+                `Step ${currentStep + 1} of ${example.steps.length}`;
+            
+            updateButtons();
+        }
+
+        function updateButtons() {
+            const example = examples[selectedExample];
+            const prevBtn = document.querySelector('.btn-prev');
+            const nextBtn = document.querySelector('.btn-next');
+            
+            prevBtn.disabled = currentStep === 0;
+            nextBtn.disabled = currentStep === example.steps.length - 1;
+        }
+
+        function nextStep() {
+            const example = examples[selectedExample];
+            if (currentStep < example.steps.length - 1) {
+                currentStep++;
+                renderTape();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                renderTape();
+            }
+        }
+
+        function reset() {
+            currentStep = 0;
+            renderTape();
+        }
+
+        function changeExample(ex) {
+            selectedExample = ex;
+            currentStep = 0;
+            
+            const buttons = document.querySelectorAll('.btn-example');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes(ex)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            const example = examples[ex];
+            document.getElementById('input-text').textContent = example.input;
+            document.getElementById('output-text').textContent = example.output;
+            
+            renderTape();
+        }
+
+        // Initialize
+        renderTape();
+    </script>
+</body>
+</html>
